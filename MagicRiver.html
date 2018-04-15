@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/css"; charset="utf-8">
+	<title>Волшебная река</title>
+	<style type="text/css">
+
+		body{
+			padding: 0;
+			margin: 0;
+			background-color: #ffffcc;
+			font-family: Helvetica;		
+			height: 100%;
+		}
+		div{
+			transition: left 0.1s;
+		}
+		
+
+		#river{		
+			height: 350px;
+			width: 100%;
+			margin-top: -10px;
+			background: linear-gradient(to top right, #80dfff, #0099cc);
+		}	
+		#ground{
+			width: 100%;
+			height: 350px;
+		}
+
+
+		
+		#fish{
+			width: 140px;
+			height: 50px;
+			position: absolute;
+		}
+		#fishHead{
+			width: 50px;
+			height: 50px;
+			margin-left: -10px;
+		}
+		#fishBody{
+			width: 100px;
+			height: 50px;
+		}
+
+		.objPic{
+			width: 40px;
+			height: 40px; 
+			position: absolute;
+			left: 95%;
+		}
+
+		#scorePanel{			
+			width: 80%;
+			margin: 0 auto;
+			text-align: center;
+			font-size: 20px;
+			font-style: bold;
+		}
+		.scorePic{
+			width: 50px;
+			height: 50px;
+		}
+		table{
+			margin: 0 auto;
+			padding: 10px;
+		}
+
+		#inform{
+			position: absolute;
+			left: 40%;
+			top: 200px;
+			background-color: #fff;
+			width: 300px;
+			height: 80px;
+			display: none;
+			font-size: 18px;
+			text-align: center;
+			border: 2px solid #000;
+		}	
+
+
+		@media screen and (max-height: 770px){
+			#river{			
+				height: 300px;
+				width: 100%;
+				margin-top: -10px;
+				background: linear-gradient(to top right, #80dfff, #0099cc);			
+			}
+			#ground{
+				width: 100%;
+				height: 300px;
+			}
+		}
+		#playerCounter{
+			float: left; 
+			margin-top: 40px;
+			margin-left: 20px;
+			font-size: 16px;
+		}
+
+	</style>
+
+
+	<script type="text/javascript">
+
+		var pageSound = new Audio('sound.mp3');
+		var speed = 0, newElems = 0, moveTime = 1000, maxRespTime = 3000;
+		var loseFlag = false;
+		var score = [0, 0, 0, 0, 0];
+
+
+		window.onload =	function(){	newGame(); }
+
+		function newGame(){
+			
+			loseFlag = false;
+			fishHead.src = 'fish1.png';
+			moveTime = 1000;
+			maxRespTime = 3000;
+
+			speed = setInterval(movingObjects, moveTime); 
+			newElems = setInterval(newObject, maxRespTime);
+
+			pageSound.loop = true;
+			pageSound.play();
+
+			score = [0, 0, 0, 0, 0];
+			for (var i = 0; i < score.length; i++)
+	 	    	document.getElementsByClassName('scoreValue')[i].innerHTML = '0';
+		}
+
+
+		function getLeft(obj){
+			return obj.getBoundingClientRect().left;
+		}
+		function getTop(obj){
+			return obj.getBoundingClientRect().top;
+		}
+		function getBottom(obj){
+			return obj.getBoundingClientRect().bottom;
+		}
+		function sound(snd){
+			var s = new Audio(snd);
+			s.play();
+		}
+		function currPic(obj){				
+			return obj.src.split('/')[obj.src.split('/').length - 1];
+		}
+
+		
+		function fishControl(){									
+	        window.onkeypress = function(event){
+	            event = event || window.event;
+
+	            //console.log(event.charCode);
+
+	            if (event.charCode == 13){
+	            	if (inform.innerHTML != 'Пауза'){
+		            	clearInterval(newElems);
+						clearInterval(speed);
+						inform.style.display = 'block';
+						inform.innerHTML = 'Пауза';
+					}
+					else{
+						speed = setInterval(movingObjects, moveTime); 
+						newElems = setInterval(newObject, maxRespTime);
+						inform.style.display = 'none';
+						inform.innerHTML = '';
+					}
+	            }
+
+	            if (inform.innerHTML != 'Пауза'){	            
+					var fish = document.getElementById('fish');
+					var river = document.getElementById('river');
+		  
+		        	if (event.charCode == 115 || event.charCode == 1099 || event.charCode == 83)		//down
+
+		        		moveDown();
+		        		
+		    
+		        	if (event.charCode == 119 || event.charCode == 1094 || event.charCode == 87)		//up
+		        		if ( (getTop(fish) - 10) > getTop(river) )
+		        		  fish.style.top = fish.getBoundingClientRect().top - 20 + 'px';
+
+		        	if (event.charCode == 100 || event.charCode == 1074 || event.charCode == 68)		//right
+		        		if ( (getLeft(fish) + 150 ) < river.getBoundingClientRect().right - 10)
+		        		  fish.style.left = fish.getBoundingClientRect().left + 20 + 'px';
+
+		        	if (event.charCode == 97 || event.charCode == 1092 || event.charCode == 65)			//left
+		        		if (getLeft(fish) > 10)
+		        		  fish.style.left = fish.getBoundingClientRect().left - 20 + 'px'; 
+	        	}
+	   		}
+	    }
+
+	    function moveDown(){
+	    	if ( (getTop(fish) + 40) < (getTop(river) + (getBottom(river) - getTop(river) - 20) ) )
+		        		  fish.style.top = fish.getBoundingClientRect().top + 20 + 'px';
+	    }
+
+
+
+	    function movingObjects(){	
+	     	var obj = document.getElementsByClassName('objPic');
+	     	for (var i = 0; i < obj.length; i++)
+		     	if (getLeft(obj[i]) > 30)
+		     		obj[i].style.left = getLeft(obj[i]) - 20 + 'px'
+		     	else
+		     		river.removeChild(obj[i]);
+	     	checkMeeting();     	
+	     }
+
+
+	    function newObject(){		//creating of objects  
+	    	if (!loseFlag){   	
+		     	var obj = document.createElement("img");
+		     	obj.className = 'objPic';
+		    
+		     	var elemType = Math.round(Math.random() * (10 - 0) + 0);
+		     	switch(elemType){
+		     		case 0: obj.src = 'weed.png';
+		     			break;
+		     		case 1: obj.src = 'shpric2.png';
+		     			break;
+		     		case 2: obj.src = 'shpric1.png';
+		     			break;
+		     		case 3: obj.src = 'poop.png';
+		     			break;
+		     		case 4: obj.src = 'dick.png';
+		     			break;
+		     		case 5: obj.src = 'weed.png';
+		     			break;
+		     		case 6: obj.src = 'weed.png';
+		     			break;
+		     		case 7: obj.src = 'weed.png';
+		     			break;
+		     		case 8: obj.src = 'weed.png';
+		     			break;
+		     		case 9: obj.src = 'shpric2.png';
+		     			break;		     		
+					default: obj.src = 'weed.png';
+					    break;
+		     	}
+		     	var topp = Math.round(Math.random() * ((getBottom(river) - 40) -  (getBottom(ground) + 10) ) + (getBottom(ground) + 10) ) + 'px';	////
+		     	obj.style.top = topp;  
+		   
+		   		document.getElementById('river').appendChild(obj);	
+		   	} 
+	    }
+
+
+	    function checkMeeting(){
+	    	var obj = document.getElementsByClassName('objPic');
+	    	var fish = document.getElementById('fish');
+	    	var inform = document.getElementById('inform');
+	    	var fishHead = document.getElementById('fishHead');
+
+	     	for (var i = 0; i < obj.length; i++)
+	    	if ( (getLeft(obj[i]) < (getLeft(fish) + 140)) 
+	    		&& (Math.abs((getTop(fish) + 25) - (getTop(obj[i]) + 12)) <= 25 )  
+	    		&& (getLeft(obj[i]) > (getLeft(fish))) 
+	    		&& ( (getLeft(obj[i]) - getLeft(fish)) > 25 ) ){		////////////////////////////
+				
+		     	switch(currPic(obj[i])){
+			     		case 'weed.png':{
+			     			score[0]++;
+			     			sound('eatSound.mp3');	
+			     		}
+			     		break;		  
+			     		case 'shpric1.png':{
+			     			score[1]++;
+			     			decSpeed();
+			     			sound('eatSound.mp3');
+			     			showInform('Скорость падает!');
+			     		} 
+			     		break;
+			     		case 'shpric2.png':{
+			     			score[2]++;
+			     			incSpeed();
+			     			sound('eatSound.mp3');
+			     			showInform('Скорость возрастает!');
+			     		} 
+			     		break;
+			     		case 'dick.png':{
+			     			score[3]++;
+			     			fishHead.src = 'fishDick.png';
+	     					setTimeout(function(){fishHead.src = 'fish1.png'}, 5000);	//fish's mouth			     			
+			     				if (score[3] == 1){
+			     					if (score[4] > 0)
+				     					score[4]--;
+				     				inform.style.display = 'none';
+				     				showInform('Ты получаешь ещё один шанс, ведь один раз - не пидорас ;-)');	
+				     				sound("dickSound.mp3");  							
+			     				}
+			     				else
+			     					lose();			     					     			
+			     		}
+			     		break;
+			     		case 'poop.png':{
+			     			score[4]++;			     			
+			     			var lastFace = currPic(fishHead);
+			     			if (lastFace != 'fishDick.png'){
+			     				fishHead.src = 'fishPoop.png';
+	     						setTimeout(function(){fishHead.src = 'fish1.png'}, 5000);	//fish's mouth
+			     			}
+	     					if (score[4] != 3){
+	     						sound("poopSound.mp3");    								
+	     					}
+	     					if (score[4] == 2){
+	     						inform.style.display = 'none';
+	     						showInform('Ещё одно говнецо и ты проиграешь!');
+	     					}
+			     			if (score[4] == 3)		     				
+			     				lose();
+			     		}
+			     		break;
+						default: break;
+			    } 
+			    if (currPic(fishHead) != 'fishPoop.png' && currPic(fishHead) != 'fishDick.png'){
+		     		fishHead.src = 'fish2.png';
+		     		setTimeout(function(){fishHead.src = 'fish1.png'}, 600);	//fish's mouth
+	     		} 
+			    document.getElementById('river').removeChild(obj[i]);  
+
+			    if ( (score[0] % 10) == 0 && score[0] != 0 ){			/////increment speed
+					incSpeed();
+					inform.style.display = 'none';
+					showInform('Собрано ещё 10 ништяков! Скорость возрастает!');		
+					//clearInterval(newElems);					
+		 	    	if (maxRespTime != 2000)
+		 	    		maxRespTime -= 250;
+		 	    	newElems = setInterval(newObject, maxRespTime);		
+			    }		 	    	
+	 	   		
+	 	   		/*if ( ((score[0] % 20) == 0) && (score[0] != 0) ){		/////increment respown
+		 	    	clearInterval(newElems);
+		 	    	if (maxRespTime != 2000)
+		 	    		maxRespTime -= 1000;
+		 	    	newElems = setInterval(newObject, Math.round(Math.random() * (maxRespTime - 1000) + 1000))
+	 	   		} 	*/   				
+	 	    }
+
+	 	    for (var i = 0; i < score.length; i++)
+	 	    	document.getElementsByClassName('scoreValue')[i].innerHTML = score[i];   
+	 	    
+		}
+
+		
+
+		function decSpeed(){
+			clearInterval(speed);
+			if (moveTime != 1000)
+		 		moveTime += 100;
+		 	speed = setInterval(movingObjects, moveTime);		 	
+		}
+		function incSpeed(){
+			clearInterval(speed);
+			if (moveTime != 300)
+		 		moveTime -= 100;
+		 	speed = setInterval(movingObjects, moveTime);
+		}
+
+	
+		function showInform(txt){
+			if (!loseFlag){
+				if (inform.style.display == 'block')					
+					setTimeout(function(){showInform(txt)}, 300);
+				else{			
+					inform.innerHTML = txt;
+					inform.style.display = 'block';
+					setTimeout(function(){inform.style.display = 'none'}, 3500);	
+				}
+			}
+		}
+
+		function lose(){
+			clearInterval(newElems);
+			clearInterval(speed);
+			for (var i = 0; i < document.getElementsByClassName('objPic').length; i++){			
+				document.getElementsByClassName('objPic')[i].style.display = 'none';
+				//document.getElementById('river').removeChild(document.getElementsByClassName('objPic')[i]);	
+			}			
+			pageSound.pause();	
+			sound("gameOver.mp3");			
+			inform.style.display = 'none';
+			showInform('Ты проиграл!');
+			loseFlag = true;
+
+			setTimeout( function(){
+								if (confirm("Сыграть снова?")) 
+									//newGame();
+									location.reload(); 
+								else{
+									sound('dickSound.mp3'); 
+									alert('Фу, лох! Слился!')}
+							}, 3600 );	
+		}
+
+	</script>
+</head>
+
+<body onkeydown="fishControl()">
+	
+	<div id="main">
+		<img src="ground.png" id="ground"/>
+		<div id="river">
+			<div id="fish"><img src="body.png" id="fishBody"/><img src="fish1.png" id="fishHead"/></div>
+		</div>
+		<span id="playerCounter">В игру уже сыграло: 63 человека</span>
+		<div id='scorePanel'>
+			<table cellspacing="10">
+				<tr>
+					<td><img src="weed.png" class="scorePic"/></td>
+					<td class="scoreValue">0</td>
+					<td><img src="shpric1.png" class="scorePic"/></td>
+					<td class="scoreValue">0</td>
+					<td><img src="shpric2.png" class="scorePic"/></td>
+					<td class="scoreValue">0</td>
+					<td><img src="dick.png" class="scorePic"/></td>
+					<td class="scoreValue">0</td>
+					<td><img src="poop.png" class="scorePic"/></td>
+					<td class="scoreValue">0</td>
+				</tr>
+			</table>			
+		</div>
+	</div>
+
+	<div id="inform"></div>
+
+
+</body>
+</html>
