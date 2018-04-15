@@ -179,7 +179,7 @@
 		function fishControl(){									
 	        window.onkeypress = function(event){
 	            event = event || window.event;
-
+		    pageSound.play();
 	            //console.log(event.charCode);
 
 	            if (event.charCode == 13)
@@ -240,7 +240,7 @@
 
 
 	    function moveDown(){
-		    pageSound.play();
+		   // pageSound.play();
 	    	var fish = document.getElementById('fish');
 			var river = document.getElementById('river');
 	    	if ( (getTop(fish) + 40) < (getBottom(river) - 20) )
