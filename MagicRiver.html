@@ -179,9 +179,32 @@
 		function fishControl(){									
 	        window.onkeypress = function(event){
 	            event = event || window.event;
+<<<<<<< HEAD
 
 	            if (event.charCode == 13)            		
 	            	pauseFun();
+=======
+		    pageSound.play();
+	            //console.log(event.charCode);
+
+	            if (event.charCode == 13)
+	            		
+	            		pauseFun();
+
+	            	/*if (inform.innerHTML != 'Пауза'){
+		            	clearInterval(newElems);
+						clearInterval(speed);
+						inform.style.display = 'block';
+						inform.innerHTML = 'Пауза';
+					}
+					else{
+						speed = setInterval(movingObjects, moveTime); 
+						newElems = setInterval(newObject, maxRespTime);
+						inform.style.display = 'none';
+						inform.innerHTML = '';
+					}
+	            }*/
+>>>>>>> 1d4bb575fccf60b8e95900bf8fea0fe47263d20b
 
 	            if (!pauseFlag){	            
 		  			
@@ -221,6 +244,7 @@
 
 
 	    function moveDown(){
+		   // pageSound.play();
 	    	var fish = document.getElementById('fish');
 			var river = document.getElementById('river');
 	    	if ( (getTop(fish) + 40) < (getBottom(river) - 20) )
