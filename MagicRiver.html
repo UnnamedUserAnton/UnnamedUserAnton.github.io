@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/css"; charset="utf-8">
+	<meta name="viewport" content="width=700, user-scalable=no, maximum-scale=1.0" />
 	<title>Волшебная река</title>
 	<style type="text/css">
 
@@ -34,6 +35,7 @@
 			width: 140px;
 			height: 50px;
 			position: absolute;
+
 		}
 		#fishHead{
 			width: 50px;
@@ -101,6 +103,21 @@
 			font-size: 16px;
 		}
 
+		#mobControl{
+			margin: 0 auto;
+			width: 100%;
+			text-align: center;
+			/*position: absolute;
+			top: 0;
+			left: 0;*/
+
+		}
+
+		#mobControl img{
+			width: 100px;
+			height: 100px;
+		}
+
 	</style>
 
 
@@ -109,13 +126,21 @@
 		var pageSound = new Audio('sound.mp3');
 		var speed = 0, newElems = 0, moveTime = 1000, maxRespTime = 3000;
 		var loseFlag = false;
+		var pauseFlag = false;
 		var score = [0, 0, 0, 0, 0];
 
 
 		window.onload =	function(){	newGame(); }
 
 		function newGame(){
-			
+
+			if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) 
+				document.getElementById('mobControl').style.display = 'block';
+			else
+				document.getElementById('mobControl').style.display = 'none';
+
+		
+
 			loseFlag = false;
 			fishHead.src = 'fish1.png';
 			moveTime = 1000;
@@ -157,8 +182,11 @@
 
 	            //console.log(event.charCode);
 
-	            if (event.charCode == 13){
-	            	if (inform.innerHTML != 'Пауза'){
+	            if (event.charCode == 13)
+	            		
+	            		pauseFun();
+
+	            	/*if (inform.innerHTML != 'Пауза'){
 		            	clearInterval(newElems);
 						clearInterval(speed);
 						inform.style.display = 'block';
@@ -170,36 +198,76 @@
 						inform.style.display = 'none';
 						inform.innerHTML = '';
 					}
-	            }
+	            }*/
 
-	            if (inform.innerHTML != 'Пауза'){	            
-					var fish = document.getElementById('fish');
-					var river = document.getElementById('river');
-		  
+	            if (!pauseFlag){	            
+		  			
 		        	if (event.charCode == 115 || event.charCode == 1099 || event.charCode == 83)		//down
-
-		        		moveDown();
-		        		
-		    
-		        	if (event.charCode == 119 || event.charCode == 1094 || event.charCode == 87)		//up
-		        		if ( (getTop(fish) - 10) > getTop(river) )
-		        		  fish.style.top = fish.getBoundingClientRect().top - 20 + 'px';
+		        		moveDown();		
+		   
+		        	if (event.charCode == 119 || event.charCode == 1094 || event.charCode == 87)		//up		        		
+		        		moveUp();   
 
 		        	if (event.charCode == 100 || event.charCode == 1074 || event.charCode == 68)		//right
-		        		if ( (getLeft(fish) + 150 ) < river.getBoundingClientRect().right - 10)
-		        		  fish.style.left = fish.getBoundingClientRect().left + 20 + 'px';
+		        		moveRight();
 
 		        	if (event.charCode == 97 || event.charCode == 1092 || event.charCode == 65)			//left
-		        		if (getLeft(fish) > 10)
-		        		  fish.style.left = fish.getBoundingClientRect().left - 20 + 'px'; 
+		        		moveLeft();
 	        	}
 	   		}
 	    }
 
-	    function moveDown(){
-	    	if ( (getTop(fish) + 40) < (getTop(river) + (getBottom(river) - getTop(river) - 20) ) )
-		        		  fish.style.top = fish.getBoundingClientRect().top + 20 + 'px';
+	    function pauseFun(){
+	    	if (pauseFlag){
+	    		pauseFlag = false;
+	    		speed = setInterval(movingObjects, moveTime); 
+				newElems = setInterval(newObject, maxRespTime);
+				inform.style.display = 'none';
+				inform.innerHTML = '';
+	    	}
+	            
+
+	         else{
+	         	pauseFlag = true;
+	         	clearInterval(newElems);
+				clearInterval(speed);
+				inform.style.display = 'block';
+				inform.innerHTML = 'Пауза';
+	         }
+	            
+
 	    }
+
+
+	    function moveDown(){
+	    	var fish = document.getElementById('fish');
+			var river = document.getElementById('river');
+	    	if ( (getTop(fish) + 40) < (getBottom(river) - 20) )
+		        fish.style.top = fish.getBoundingClientRect().top + 20 + 'px';
+
+	    }
+
+	    function moveUp(){
+	    	var fish = document.getElementById('fish');
+			var river = document.getElementById('river');
+			if ( (getTop(fish) - 15) > getTop(river) )
+		        fish.style.top = fish.getBoundingClientRect().top - 20 + 'px';
+	    }
+
+	    function moveLeft(){
+	    	var fish = document.getElementById('fish');
+			var river = document.getElementById('river');
+	    	if (getLeft(fish) > 10)
+		        fish.style.left = fish.getBoundingClientRect().left - 20 + 'px'; 
+	    }
+
+		function moveRight(){
+			var fish = document.getElementById('fish');
+			var river = document.getElementById('river');
+	    	if ( (getLeft(fish) + 150 ) < river.getBoundingClientRect().right - 10)
+		        fish.style.left = fish.getBoundingClientRect().left + 20 + 'px';
+	    }
+
 
 
 
@@ -208,8 +276,8 @@
 	     	for (var i = 0; i < obj.length; i++)
 		     	if (getLeft(obj[i]) > 30)
 		     		obj[i].style.left = getLeft(obj[i]) - 20 + 'px'
-		     	else
-		     		river.removeChild(obj[i]);
+		     	else		     	
+					document.getElementById('river').removeChild(obj[i]);
 	     	checkMeeting();     	
 	     }
 
@@ -247,14 +315,14 @@
 		     	var topp = Math.round(Math.random() * ((getBottom(river) - 40) -  (getBottom(ground) + 10) ) + (getBottom(ground) + 10) ) + 'px';	////
 		     	obj.style.top = topp;  
 		   
-		   		document.getElementById('river').appendChild(obj);	
+		   		document.getElementById('river').appendChild(obj);
 		   	} 
 	    }
 
 
 	    function checkMeeting(){
 	    	var obj = document.getElementsByClassName('objPic');
-	    	var fish = document.getElementById('fish');
+	    	//var fish = document.getElementById('fish');
 	    	var inform = document.getElementById('inform');
 	    	var fishHead = document.getElementById('fishHead');
 
@@ -409,7 +477,7 @@
 		<div id="river">
 			<div id="fish"><img src="body.png" id="fishBody"/><img src="fish1.png" id="fishHead"/></div>
 		</div>
-		<span id="playerCounter">В игру уже сыграло: 63 человека</span>
+		<span id="playerCounter">В игру уже сыграло: 148 человек</span>
 		<div id='scorePanel'>
 			<table cellspacing="10">
 				<tr>
@@ -426,6 +494,17 @@
 				</tr>
 			</table>			
 		</div>
+
+		<div id="mobControl">
+					<img id="leftArr" src="left.png" onclick="moveLeft()" />
+					
+					<img id="rightArr" src="right.png" onclick="moveRight()" />
+
+					<img id="upArr" src="up.png" onclick="moveUp()" />
+					<img id="downArr" src="down.png" onclick="moveDown()" />
+					<img id="pauseButton" src="pause.png" onclick="pauseFun()" />
+		</div>
+
 	</div>
 
 	<div id="inform"></div>
