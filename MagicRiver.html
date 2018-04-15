@@ -180,25 +180,8 @@
 	        window.onkeypress = function(event){
 	            event = event || window.event;
 
-	            //console.log(event.charCode);
-
-	            if (event.charCode == 13)
-	            		
-	            		pauseFun();
-
-	            	/*if (inform.innerHTML != 'Пауза'){
-		            	clearInterval(newElems);
-						clearInterval(speed);
-						inform.style.display = 'block';
-						inform.innerHTML = 'Пауза';
-					}
-					else{
-						speed = setInterval(movingObjects, moveTime); 
-						newElems = setInterval(newObject, maxRespTime);
-						inform.style.display = 'none';
-						inform.innerHTML = '';
-					}
-	            }*/
+	            if (event.charCode == 13)            		
+	            	pauseFun();
 
 	            if (!pauseFlag){	            
 		  			
@@ -233,9 +216,7 @@
 				clearInterval(speed);
 				inform.style.display = 'block';
 				inform.innerHTML = 'Пауза';
-	         }
-	            
-
+	         }    
 	    }
 
 
@@ -244,7 +225,6 @@
 			var river = document.getElementById('river');
 	    	if ( (getTop(fish) + 40) < (getBottom(river) - 20) )
 		        fish.style.top = fish.getBoundingClientRect().top + 20 + 'px';
-
 	    }
 
 	    function moveUp(){
@@ -267,8 +247,6 @@
 	    	if ( (getLeft(fish) + 150 ) < river.getBoundingClientRect().right - 10)
 		        fish.style.left = fish.getBoundingClientRect().left + 20 + 'px';
 	    }
-
-
 
 
 	    function movingObjects(){	
@@ -374,8 +352,9 @@
 			     				fishHead.src = 'fishPoop.png';
 	     						setTimeout(function(){fishHead.src = 'fish1.png'}, 5000);	//fish's mouth
 			     			}
-	     					if (score[4] != 3){
-	     						sound("poopSound.mp3");    								
+	     					if (score[4] != 3){					////////////////////////////////////////////////////////////////////////////////////////////////
+	     						//sound("poopSound.mp3");   
+	     						soundOn.click(); 								
 	     					}
 	     					if (score[4] == 2){
 	     						inform.style.display = 'none';
@@ -467,6 +446,10 @@
 							}, 3600 );	
 		}
 
+		function poopSoun(){
+			sound("poopSound.mp3"); 
+		}
+
 	</script>
 </head>
 
@@ -503,6 +486,8 @@
 					<img id="upArr" src="up.png" onclick="moveUp()" />
 					<img id="downArr" src="down.png" onclick="moveDown()" />
 					<img id="pauseButton" src="pause.png" onclick="pauseFun()" />
+
+					<div id="soundOn" onclick="poopSound()"></div>
 		</div>
 
 	</div>
