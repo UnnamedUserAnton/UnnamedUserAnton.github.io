@@ -240,6 +240,7 @@
 
 
 	    function moveDown(){
+		    pageSound.play();
 	    	var fish = document.getElementById('fish');
 			var river = document.getElementById('river');
 	    	if ( (getTop(fish) + 40) < (getBottom(river) - 20) )
